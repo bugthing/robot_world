@@ -10,34 +10,57 @@ describe RobotWorld::Planet do
     it { expect(planet.robots).to be_empty }
   end
 
-  describe '#move_to' do
-    subject { planet.move_to(new_x, new_y) }  
-
-    let(:new_x) { 2 }
-    let(:new_y) { 2 }
+  describe '#can_move_to?' do
+    subject { planet.can_move_to?(new_x, new_y) }  
 
     context 'move is outside bounds' do
-      it { should eq :fail }
+      let(:new_x) { 2 }
+      let(:new_y) { 2 }
+
+      it { should eq false }
     end
 
     context 'move is inside bounds' do
       let(:new_x) { 1 }
       let(:new_y) { 1 }
-      it { should eq :ok }
+
+      it { should eq true }
     end
+  end
 
-    context 'move where robot has already been lost' do
+  describe '#scents_at?' do
+    subject { planet.scents_at(1, 1) }  
+    context 'when no robots' do
+      it { should be_empty }
+    end
+    context 'when no lost robots' do
+      before { planet.robots << double(lost?: false)  }
+      it { should be_empty }
+    end
+    context 'when no lost robots at coordinates' do
+      before { planet.robots << double(lost?: true, x: 0, y: 0) }
+      it { should be_empty }
+    end
+    context 'when 1 lost robots at coordinates' do
+      before { planet.robots << double(lost?: true, x: 1, y: 1, facing: :north) }
+      it { should eq [:north] }
+    end
+    context 'when 2 lost robots at coordinates' do
       before do
-        allow(planet).to receive(:robots).and_return([lost_robot])
+         planet.robots << double(lost?: true, x: 1, y: 1, facing: :north) 
+         planet.robots << double(lost?: true, x: 1, y: 1, facing: :south)
       end
-      let(:lost_robot) { double(lost?: true, x: 2, y: 2) }
+      it { should eq [:north, :south] }
+    end
+  end
 
-      it { should eq :scent }
-
-      context 'move where robot has NOT already been lost' do
-        let(:lost_robot) { double(lost?: true, x: 2, y: 3) }
-        it { should eq :fail }
-      end
+  describe '#add_robot_at' do
+    subject { planet.add_robot_at(x: 1, y: 1, facing: 'N') }  
+    it 'instanciats a new robot and adds to planet' do
+      robot = double
+      allow(RobotWorld::Robot).to receive(:new).with(x: 1, y: 1, facing: 'N', planet: planet).and_return(robot)
+      subject
+      expect(planet.robots).to include robot
     end
   end
 end

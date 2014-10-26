@@ -1,13 +1,25 @@
-module RobotWorld
+require 'virtus'
+class RobotWorld
   class Compass
+    include Virtus.model(:strict => true)
+
+    class Direction < Virtus::Attribute
+      def coerce(value)
+        return value if %i(north south east west).include?(value)
+        case value
+        when 'N'; :north
+        when 'S'; :south
+        when 'E'; :east
+        when 'W'; :west
+        else
+          raise CoercionError, "Could not determin direction from: #{value}"
+        end
+      end
+    end
+
     @@all_directions = [:north, :east, :south, :west]
 
-    attr_reader :direction
-
-    def initialize(direction)
-      raise StandardError: 'Invalid direction' unless @@all_directions.index(direction)
-      @direction = direction 
-    end
+    attribute :direction, RobotWorld::Compass::Direction
 
     def left
       i = direction_index - 1

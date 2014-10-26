@@ -1,33 +1,34 @@
 require 'virtus'
-module RobotWorld
+class RobotWorld
   class Planet
-    include Virtus.model(:strict => true)
+    include Virtus.model
     require_relative 'robot'
 
     attribute :x, Integer, default: 1
     attribute :y, Integer, default: 1
-
     attribute :name, String, default: 'Mars'
 
-    attribute :robots, Array[RobotWorld::Robot]
-
-    def move_to(new_x, new_y)
-      if existing_robots_scents_at?(new_x, new_y)
-        :scent
-      elsif new_x < 0 || new_x > x || new_y < 0 || new_y > y
-        :fail
-      else
-        :ok
-      end
+    def robots
+      @robots ||= []
     end
 
-    private
+    def can_move_to?(new_x, new_y)
+      !(new_x < 0 || new_x > x || new_y < 0 || new_y > y)
+    end
 
-    def existing_robots_scents_at?(new_x, new_y)
-      robots.select(&:lost?).each do |robot|
-        return true if (robot.x == new_x && robot.y == new_y )
-      end
-      false
+    def scents_at(new_x, new_y)
+      robots.select(&:lost?).map do |robot|
+        robot.facing if(robot.x == new_x && robot.y == new_y)
+      end.compact
+    end
+
+    def add_robot_at(x: 0, y: 0, facing: :north)
+      robot = RobotWorld::Robot.new x: x, 
+                                    y: y, 
+                                    facing: facing,
+                                    planet: self
+      robots << robot
+      robot
     end
   end
 end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 describe RobotWorld::Compass do
 
-  let(:compass) { described_class.new(direction) }
+  let(:compass) { described_class.new(direction: direction) }
 
   context 'when facing north' do
     let(:direction) { :north }

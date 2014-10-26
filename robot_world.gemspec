@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = RobotWorld::VERSION
   spec.authors       = ["Benjamin Martin"]
   spec.email         = ["benjaminjohnmartin@gmail.com"]
-  spec.summary       = %q{Robots on Mars for RedBadger.}
-  spec.description   = %q{Gem to statify the coding challenge from RedBadger.}
+  spec.summary       = %q{Robots on Mars.}
+  spec.description   = %q{Gem to statify the coding challenge.}
   spec.homepage      = ""
   spec.license       = "MIT"
 

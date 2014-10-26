@@ -1,5 +1,5 @@
 require 'thor'
-module RobotWorld
+class RobotWorld
   class CLI < Thor
 
     desc 'move_robot', 'Process STDIN to move a robot on mars'
@@ -20,9 +20,8 @@ module RobotWorld
 
     LONGDESC
     def move_robot
-      puts "MOVING: #{$stdin}"
+      RobotWorld.new($stdin.read).execute
     end
-
     default_task :move_robot
   end
 end
